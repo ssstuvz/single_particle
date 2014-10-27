@@ -4,7 +4,7 @@ CFLAGS=-std=c99 -DUSE_DOUBLES -c
 all: particle
 
 particle: main.o electro_magnetic_field.o rk4.o simulation_parameters.o
-	$(CC) main.o electro_magnetic_field.o rk4.o simulation_parameters.o -o particle.e
+	$(CC) main.o electro_magnetic_field.o rk4.o simulation_parameters.o -o particle.e -lm
 
 main.o:
 	$(CC) $(CFLAGS) main.c 
