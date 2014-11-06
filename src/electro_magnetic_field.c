@@ -18,7 +18,7 @@ void Gaussian_Plane_Wave(my_float t, my_float x, my_float y, my_float z, my_floa
 	// Fields[5] - Bz
 
 	// gaussian e-m pulse parameters
-	my_float a0=0.1;          // pulse amplitude
+	my_float a0=2.0;          // pulse amplitude
 	my_float Duration=10;		// pulse Duration in cycles
 	my_float Start=50;        // temporal offset (simulation starts at t=0)
 	int Polarization=0;
@@ -55,7 +55,26 @@ void Gaussian_Plane_Wave(my_float t, my_float x, my_float y, my_float z, my_floa
 
 }
 
+void Static_Magnetic_Field(my_float t, my_float x, my_float y, my_float z, my_float * Fields)
+{
+	my_float B0 = 0.5; // Field Amplitude
+	my_float boundary_min_x=-100, boundary_min_y=-100;
+	my_float boundary_max_x=100, boundary_max_y=100;
+
+	if (x > boundary_min_x && x < boundary_max_x && y > boundary_min_y && y < boundary_max_y)
+	{
+		Fields[5] = B0;
+	}
+	else
+	{
+		Fields[5] = 0;
+	}
+
+
+}
+
 void Register_Electro_Magnetic_Fields(struct electro_magnetic_field * em_field)
 {
-	em_field->return_field=&Gaussian_Plane_Wave;   // function pointer to needed field
+	//em_field->return_field=&Gaussian_Plane_Wave;   // function pointer to needed field
+	em_field->return_field=&Static_Magnetic_Field;
 }

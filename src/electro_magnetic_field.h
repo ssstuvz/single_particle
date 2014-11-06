@@ -17,6 +17,7 @@ struct electro_magnetic_field
 extern struct electro_magnetic_field em_field;
 
 void Register_Electro_Magnetic_Fields(struct electro_magnetic_field * em_field);
+void Static_Magnetic_Field(my_float t, my_float x, my_float y, my_float z, my_float * Fields);
 
 
 #endif // ELECTRO_MAGNETIC_FIELD_H
