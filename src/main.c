@@ -43,7 +43,7 @@ int main()
 	x[0]=0.0;
 	y[0]=0.0;
 	z[0]=0.0;
-	px[0]=0.0;
+	px[0]=5.0;
 	py[0]=0.0;
 	pz[0]=0.0;
 
@@ -74,8 +74,16 @@ int main()
 
 // Dump data to disk as binary
 // Be careful to read correct amount of bytes depending on my_float
-	FILE * SaveFile=fopen("px.dat", "wb");
+	FILE * SaveFile=fopen("x.dat", "wb");
+	fwrite(x, simulation.NofTS, sizeof(my_float), SaveFile);
+	fclose(SaveFile);
+
+	SaveFile=fopen("px.dat", "wb");
 	fwrite(px, simulation.NofTS, sizeof(my_float), SaveFile);
+	fclose(SaveFile);
+
+	SaveFile=fopen("y.dat", "wb");
+	fwrite(y, simulation.NofTS, sizeof(my_float), SaveFile);
 	fclose(SaveFile);
 
 	SaveFile=fopen("py.dat", "wb");
