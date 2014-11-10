@@ -55,6 +55,58 @@ void Gaussian_Plane_Wave(my_float t, my_float x, my_float y, my_float z, my_floa
 
 }
 
+void Oscillating_Mirror(my_float t, my_float x, my_float y, my_float z, my_float * Fields)
+{
+	// Fields[0] - Ex
+	// Fields[1] - Ey
+	// Fields[2] - Ez
+	// Fields[3] - Bx
+	// Fields[4] - By
+	// Fields[5] - Bz
+	// Fields[5] - n_e
+
+	// gaussian e-m pulse parameters
+	my_float a0=10.0;          // pulse amplitude
+	my_float Duration=4;		// pulse Duration in cycles
+	my_float Start=7;        // temporal offset (simulation starts at t=0)
+	int Polarization=1;
+	my_float phase=0;
+
+	// mirror parameters
+	my_float Density = 400.0; // electron density
+	my_float omega_p = sqrt(Density);
+	my_float alpha = atan(omega_p);
+
+	// convert to omega*t normalization
+	Duration=Duration*2.885;
+	Start=Start*2*PI;
+
+
+	switch(Polarization)
+	{
+		case 0: // ex, by polarization
+			Fields[0]=2*a0*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*cos(t-z-Start+phase+alpha)/sqrt(1+Density);
+			Fields[1]=0.0;
+			Fields[2]=Density*z;
+			Fields[3]=0.0;
+			Fields[4]=2*a0*omega_p*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*sin(t-z-Start+phase+alpha)/sqrt(1+Density);
+			Fields[5]=0.0;
+		case 1: // ey, bx
+			break;
+		case 2:
+			Fields[0]=2*a0*exp(-pow(t-z-Start,2)/2.0/Duration/Duration)*cos(t-z-Start+phase+alpha)/sqrt(1+Density);
+			Fields[1]=2*a0*exp(-pow(t-z-Start,2)/2.0/Duration/Duration)*cos(t-z-Start+phase+alpha+PI*0.5)/sqrt(1+Density);
+			Fields[2]=Density*z;
+			Fields[3]=-2*a0*omega_p*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*sin(t-z-Start+phase+alpha+PI*0.5)/sqrt(1+Density);
+			Fields[4]=2*a0*omega_p*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*sin(t-z-Start+phase+alpha)/sqrt(1+Density);
+			Fields[5]=0.0;
+			break;
+	}
+	//Fields[0]=1.0;
+	//Fields[1]=3.0;
+
+}
+
 void Static_Magnetic_Field(my_float t, my_float x, my_float y, my_float z, my_float * Fields)
 {
 	my_float B0 = 0.5; // Field Amplitude
@@ -76,5 +128,5 @@ void Static_Magnetic_Field(my_float t, my_float x, my_float y, my_float z, my_fl
 void Register_Electro_Magnetic_Fields(struct electro_magnetic_field * em_field)
 {
 	//em_field->return_field=&Gaussian_Plane_Wave;   // function pointer to needed field
-	em_field->return_field=&Static_Magnetic_Field;
+	em_field->return_field=&Oscillating_Mirror;
 }
