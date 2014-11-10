@@ -69,7 +69,7 @@ void Oscillating_Mirror(my_float t, my_float x, my_float y, my_float z, my_float
 	my_float a0=10.0;          // pulse amplitude
 	my_float Duration=4;		// pulse Duration in cycles
 	my_float Start=7;        // temporal offset (simulation starts at t=0)
-	int Polarization=1;
+	int Polarization=0;
 	my_float phase=0;
 
 	// mirror parameters
