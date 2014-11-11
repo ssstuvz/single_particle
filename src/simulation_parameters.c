@@ -8,7 +8,7 @@ void Register_Simulation_Parameters(struct simulation_parameters *simulation)
 	// when you call it you need to provide a pointer, not a variable itself, i.e.
 	// Register_Simulation_Parameters(&simulation)
 
-	simulation->dt=0.001;
+	simulation->dt=0.01;
 	//simulation->dt=simulation->dt*2*PI;
 	simulation->NofTS=80000;
 }

@@ -19,6 +19,9 @@ extern struct electro_magnetic_field em_field;
 void Register_Electro_Magnetic_Fields(struct electro_magnetic_field * em_field);
 void Static_Magnetic_Field(my_float t, my_float x, my_float y, my_float z, my_float * Fields);
 void Oscillating_Mirror(my_float t, my_float x, my_float y, my_float z, my_float * Fields);
+void Polarization_Gating(my_float t, my_float x, my_float y, my_float z, my_float * Fields);
+
+double PulseFunction(double x, double t, double phase, double start, double duration, double a0);
 
 
 #endif // ELECTRO_MAGNETIC_FIELD_H
