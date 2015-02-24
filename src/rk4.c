@@ -23,7 +23,7 @@ void derivatives_electron(my_float t, my_float y[], my_float dy_dt[])
 	dy_dt[1]=y[4]/gamma;
 	dy_dt[2]=y[5]/gamma;
 
-	em_field.return_field(t, y[0], y[1], y[2], Fields);
+	em_field.return_field(t, y[0], y[1], y[2], Fields, gamma);
 
 	dy_dt[3]=-Fields[0]-(y[4]*Fields[5]-y[5]*Fields[4])/gamma;
 	dy_dt[4]=-Fields[1]-(y[5]*Fields[3]-y[3]*Fields[5])/gamma;

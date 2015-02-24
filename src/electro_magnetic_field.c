@@ -18,14 +18,14 @@ void Gaussian_Plane_Wave(my_float t, my_float x, my_float y, my_float z, my_floa
 	// Fields[5] - Bz
 
 	// gaussian e-m pulse parameters
-	my_float a0=2.0;          // pulse amplitude
-	my_float Duration=4.0;		// pulse Duration in cycles
-	my_float Start=5;        // temporal offset (simulation starts at t=0)
+	my_float a0=3.0;          // pulse amplitude
+	my_float Duration=7*2.668223;		// pulse Duration in cycles
+	my_float Start=40;        // temporal offset (simulation starts at t=0)
 	int Polarization=0;
-	my_float phase=0;
+	my_float phase=1.57;
 
 	// convert to omega*t normalization
-	Duration=Duration*2*PI;
+	//Duration=Duration*2*PI;
 	Start=Start*2*PI;
 
 
@@ -55,6 +55,22 @@ void Gaussian_Plane_Wave(my_float t, my_float x, my_float y, my_float z, my_floa
 
 }
 
+void gaussianPulseLeft(my_float t, my_float x, my_float y, my_float z, my_float * Fields)
+{
+	my_float a0 = 3.0;
+	my_float duration = 7*2.668223;
+	my_float x0 = 100;
+	my_float phase = 1.57;
+
+    Fields[0]=a0*exp(-(t+z-x0)*(t+z-x0)/2.0/duration/duration)*sin(t+z+phase-x0); // Doesn't work as expected
+	//Fields[0]=a0*exp(-(-t+z+x0)*(-t+z+x0)/2.0/duration/duration)*sin(-t+z+phase+x0); // Works
+	Fields[1]=0.0;
+	Fields[2]=0.0;
+	Fields[3]=0.0;
+    Fields[4]=-Fields[0];
+    Fields[5]=0.0;
+}
+
 void Polarization_Gating(my_float t, my_float x, my_float y, my_float z, my_float * Fields)
 {
 	// Fields[0] - Ex
@@ -66,14 +82,14 @@ void Polarization_Gating(my_float t, my_float x, my_float y, my_float z, my_floa
 	// Fields[5] - n_e
 
 	// gaussian e-m pulse parameters
-	my_float a0=10.0;          // pulse amplitude
-	my_float Duration=10.0;		// pulse Duration in cycles
+	my_float a0=5.0;          // pulse amplitude
+	my_float Duration=7.0;		// pulse Duration in cycles
 	my_float Start=-40.0;        // temporal offset (simulation starts at t=0)
 	my_float phase=0;
-	my_float Delay=10.0; // delay in periods
+	my_float Delay=2.0; // delay in periods
 
 	// mirror parameters
-	my_float Density = 400.0; // electron density
+	my_float Density = 200.0; // electron density
 	my_float omega_p = sqrt(Density);
 	my_float alpha = atan(omega_p);
 	phase=alpha;
@@ -118,7 +134,7 @@ double PulseFunction(double x, double t, double phase, double start, double dura
 	return a0*cos(t-x+phase+start)*exp(-(start-x+t)*(start-x+t)/(2*duration*duration));
 }
 
-void Oscillating_Mirror(my_float t, my_float x, my_float y, my_float z, my_float * Fields)
+void Oscillating_Mirror(my_float t, my_float x, my_float y, my_float z, my_float * Fields,  my_float gamma)
 {
 	// Fields[0] - Ex
 	// Fields[1] - Ey
@@ -131,14 +147,68 @@ void Oscillating_Mirror(my_float t, my_float x, my_float y, my_float z, my_float
 	// gaussian e-m pulse parameters
 	my_float a0=10.0;          // pulse amplitude
 	my_float Duration=4;		// pulse Duration in cycles
-	my_float Start=7;        // temporal offset (simulation starts at t=0)
-	int Polarization=2;
+	my_float Start=10;        // temporal offset (simulation starts at t=0)
+	int Polarization=0;
 	my_float phase=0;
 
 	// mirror parameters
 	my_float Density = 400.0; // electron density
+	my_float omega_p = sqrt(Density)/sqrt(gamma);
+	my_float alpha = atan(omega_p);
+
+	// convert to omega*t normalization
+	Duration=Duration*2.885;
+	Start=Start*2*PI;
+
+
+	switch(Polarization)
+	{
+		case 0: // ex, by polarization
+			Fields[0]=2*a0*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*cos(t-z-Start+phase+alpha)/sqrt(1+Density);
+			Fields[1]=0.0;
+			Fields[2]=Density*z;
+			Fields[3]=0.0;
+			Fields[4]=2*a0*omega_p*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*sin(t-z-Start+phase+alpha)/sqrt(1+Density);
+			Fields[5]=0.0;
+		case 1: // ey, bx
+			break;
+		case 2:
+			Fields[0]=2*a0*exp(-pow(t-z-Start,2)/2.0/Duration/Duration)*cos(t-z-Start+phase+alpha)/sqrt(1+Density);
+			Fields[1]=2*a0*exp(-pow(t-z-Start,2)/2.0/Duration/Duration)*cos(t-z-Start+phase+alpha+PI*0.5)/sqrt(1+Density);
+			Fields[2]=Density*z;
+			Fields[3]=-2*a0*omega_p*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*sin(t-z-Start+phase+alpha+PI*0.5)/sqrt(1+Density);
+			Fields[4]=2*a0*omega_p*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*sin(t-z-Start+phase+alpha)/sqrt(1+Density);
+			Fields[5]=0.0;
+			break;
+	}
+	//Fields[0]=1.0;
+	//Fields[1]=3.0;
+
+}
+
+void Intensity_Gating(my_float t, my_float x, my_float y, my_float z, my_float * Fields)
+{
+	// Fields[0] - Ex
+	// Fields[1] - Ey
+	// Fields[2] - Ez
+	// Fields[3] - Bx
+	// Fields[4] - By
+	// Fields[5] - Bz
+	// Fields[5] - n_e
+
+	// gaussian e-m pulse parameters
+	my_float a0=5.0;          // pulse amplitude
+	my_float Duration=4;		// pulse Duration in cycles
+	my_float Start=10;        // temporal offset (simulation starts at t=0)
+	int Polarization=0;
+	
+
+	// mirror parameters
+	my_float Density = 100.0; // electron density
 	my_float omega_p = sqrt(Density);
 	my_float alpha = atan(omega_p);
+	
+	my_float phase=-1.57;
 
 	// convert to omega*t normalization
 	Duration=Duration*2.885;
@@ -191,5 +261,5 @@ void Static_Magnetic_Field(my_float t, my_float x, my_float y, my_float z, my_fl
 void Register_Electro_Magnetic_Fields(struct electro_magnetic_field * em_field)
 {
 	//em_field->return_field=&Gaussian_Plane_Wave;   // function pointer to needed field
-	em_field->return_field=&Polarization_Gating;
+	em_field->return_field=&Oscillating_Mirror;
 }
