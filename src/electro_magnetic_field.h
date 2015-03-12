@@ -23,6 +23,7 @@ void Polarization_Gating(my_float t, my_float x, my_float y, my_float z, my_floa
 void Intensity_Gating(my_float t, my_float x, my_float y, my_float z, my_float * Fields);
 
 double PulseFunction(double x, double t, double phase, double start, double duration, double a0);
+double Pulse1Function(const double x, const double t, const double phase, const double start, const double Duration, const double a0);
 
 
 #endif // ELECTRO_MAGNETIC_FIELD_H

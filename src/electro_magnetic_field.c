@@ -145,30 +145,33 @@ void Oscillating_Mirror(my_float t, my_float x, my_float y, my_float z, my_float
 	// Fields[5] - n_e
 
 	// gaussian e-m pulse parameters
-	my_float a0=10.0;          // pulse amplitude
-	my_float Duration=4;		// pulse Duration in cycles
-	my_float Start=10;        // temporal offset (simulation starts at t=0)
+	my_float a0=20.0;          // pulse amplitude
+	my_float Duration=2;		// pulse Duration in cycles
+	my_float Start=-10;        // temporal offset (simulation starts at t=0)
 	int Polarization=0;
 	my_float phase=0;
 
 	// mirror parameters
-	my_float Density = 400.0; // electron density
-	my_float omega_p = sqrt(Density)/sqrt(gamma);
+	my_float Density = 81.0; // electron density
+	my_float omega_p = sqrt(Density);
 	my_float alpha = atan(omega_p);
 
 	// convert to omega*t normalization
 	Duration=Duration*2.885;
+	//Duration=Duration*2.67;
 	Start=Start*2*PI;
 
 
 	switch(Polarization)
 	{
 		case 0: // ex, by polarization
-			Fields[0]=2*a0*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*cos(t-z-Start+phase+alpha)/sqrt(1+Density);
+			//Fields[0]=2*a0*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*cos(t-z+phase+alpha)/sqrt(1+Density);
+			Fields[0]=Pulse1Function(z, t, phase+alpha, Start, Duration, a0)/sqrt(1+Density);
 			Fields[1]=0.0;
 			Fields[2]=Density*z;
 			Fields[3]=0.0;
-			Fields[4]=2*a0*omega_p*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*sin(t-z-Start+phase+alpha)/sqrt(1+Density);
+			//Fields[4]=2*a0*omega_p*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*sin(t-z+phase+alpha)/sqrt(1+Density);
+			Fields[4]=Pulse1Function(z, t, phase+alpha+1.57, Start, Duration, a0)/sqrt(1+Density);
 			Fields[5]=0.0;
 		case 1: // ey, bx
 			break;
@@ -257,6 +260,39 @@ void Static_Magnetic_Field(my_float t, my_float x, my_float y, my_float z, my_fl
 
 
 }
+
+double Pulse1Function(const double x, const double t, const double phase, const double start, const double Duration, const double a0)
+{
+		//return Pulse1.a0*cos(t-x+phase+start)*exp(-(start-x+t)*(start-x+t)/(2*Pulse1.Duration*Pulse1.Duration));
+
+        // Implementation of the chirped pulse, Pulse1.Chirp = parabola coefficient from the Fourier spectrum (phi(omega)=alpha*(omega-omega_0)^2)
+        
+        /*double TempDuration = Duration/sqrt(2.0);
+	double Chirp = 0;
+        
+        double TempDouble1= 1.0+Chirp*Chirp/TempDuration/TempDuration/TempDuration/TempDuration;
+        double TempDouble2= Chirp/TempDuration/TempDuration/TempDuration/TempDuration;
+        double TempDouble3=0.5*atan(Chirp/TempDuration/TempDuration); */
+
+	/*double SkewLeft=0.0;
+	SkewLeft=0.5*(1.0+tanh((t-x+start-Pulse1.SkewLeftPosition*2*PI)/Pulse1.SkewLeftLength/2.0/PI));
+
+	double SkewRight=0.0;
+	SkewRight=0.5*(1.0-tanh((t-x+start-Pulse1.SkewRightPosition*2*PI)/Pulse1.SkewRightLength/2.0/PI)); */
+    
+     //   return SkewRight*SkewLeft*Pulse1.a0/sqrt(sqrt(TempDouble1))*exp(-(start-x+t)*(start-x+t)/4.0/TempDuration/TempDuration/TempDouble1)*cos((start-x+t)-0.25*TempDouble2*(start-x+t)*(start-x+t)/TempDouble1+TempDouble3);
+    
+    double TempDouble1 = sin(t-x+phase+start)*(t-x+start)/Duration/Duration;
+	return a0*exp(-(start-x+t)*(start-x+t)/(2*Duration*Duration))*(cos(t-x+phase+start)+TempDouble1);
+    //return Pulse1.a0*cos(t-x+phase+start)*exp(-(start-x+t)*(start-x+t)/(2*Pulse1.Duration*Pulse1.Duration));
+	//return Pulse1.a0*cos(t-x+phase+start)*exp(-(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)/(2*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration));
+	//return Pulse1.a0*cos(t-x+phase+start)*exp(-(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)/(2*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration));
+	//return Pulse1.a0*cos(t-x+phase+start)*exp(-(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)/(2*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration));
+
+	//return Pulse1.a0*sin(t-x+phase);
+
+}
+
 
 void Register_Electro_Magnetic_Fields(struct electro_magnetic_field * em_field)
 {
