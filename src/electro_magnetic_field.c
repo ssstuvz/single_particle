@@ -149,12 +149,12 @@ void Oscillating_Mirror(my_float t, my_float x, my_float y, my_float z, my_float
 	my_float Duration=2;		// pulse Duration in cycles
 	my_float Start=-10;        // temporal offset (simulation starts at t=0)
 	int Polarization=0;
-	my_float phase=0;
+	my_float phase=1.57;
 
 	// mirror parameters
 	my_float Density = 81.0; // electron density
-	my_float omega_p = sqrt(Density);
-	my_float alpha = atan(omega_p);
+	my_float omega_p = sqrt(Density)/sqrt(gamma);
+	my_float alpha = atan(sqrt(omega_p*omega_p/gamma-1));
 
 	// convert to omega*t normalization
 	Duration=Duration*2.885;
@@ -166,12 +166,12 @@ void Oscillating_Mirror(my_float t, my_float x, my_float y, my_float z, my_float
 	{
 		case 0: // ex, by polarization
 			//Fields[0]=2*a0*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*cos(t-z+phase+alpha)/sqrt(1+Density);
-			Fields[0]=Pulse1Function(z, t, phase+alpha, Start, Duration, a0)/sqrt(1+Density);
+			Fields[0]=Pulse1Function(z, t, phase+alpha, Start, Duration, a0)/sqrt(1+omega_p*omega_p);
 			Fields[1]=0.0;
-			Fields[2]=Density*z;
+			Fields[2]=omega_p*omega_p*z;
 			Fields[3]=0.0;
 			//Fields[4]=2*a0*omega_p*exp(-pow(t-z-Start,2)/2.0/pow(Duration,2))*sin(t-z+phase+alpha)/sqrt(1+Density);
-			Fields[4]=Pulse1Function(z, t, phase+alpha+1.57, Start, Duration, a0)/sqrt(1+Density);
+			Fields[4]=2*omega_p*Pulse1Function(z, t, phase+alpha+1.57, Start, Duration, a0)/sqrt(1+omega_p*omega_p);
 			Fields[5]=0.0;
 		case 1: // ey, bx
 			break;
@@ -282,7 +282,7 @@ double Pulse1Function(const double x, const double t, const double phase, const 
     
      //   return SkewRight*SkewLeft*Pulse1.a0/sqrt(sqrt(TempDouble1))*exp(-(start-x+t)*(start-x+t)/4.0/TempDuration/TempDuration/TempDouble1)*cos((start-x+t)-0.25*TempDouble2*(start-x+t)*(start-x+t)/TempDouble1+TempDouble3);
     
-    double TempDouble1 = sin(t-x+phase+start)*(t-x+start)/Duration/Duration;
+    double TempDouble1 = 1*sin(t-x+phase+start)*(t-x+start)/Duration/Duration;
 	return a0*exp(-(start-x+t)*(start-x+t)/(2*Duration*Duration))*(cos(t-x+phase+start)+TempDouble1);
     //return Pulse1.a0*cos(t-x+phase+start)*exp(-(start-x+t)*(start-x+t)/(2*Pulse1.Duration*Pulse1.Duration));
 	//return Pulse1.a0*cos(t-x+phase+start)*exp(-(start-x+t)*(start-x+t)*(start-x+t)*(start-x+t)/(2*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration*Pulse1.Duration));
